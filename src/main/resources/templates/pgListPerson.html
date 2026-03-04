@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список людей | Ночная симфония</title>
+    <!-- Подключаем шрифт Clash Display и General Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=General+Sans:wght@300;400;500;600&display=swap"
+          rel="stylesheet">
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "General Sans", sans-serif;
+            background: #0c0f15;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон с частицами */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Основной контейнер */
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(18, 22, 30, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 48px 48px 48px 48px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
+            0 0 0 1px rgba(255, 255, 255, 0.03),
+            inset 0 0 60px rgba(168, 85, 247, 0.1);
+            padding: 40px 45px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            animation: containerAppear 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        @keyframes containerAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Декоративные элементы */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+            top: -150px;
+            right: -150px;
+            z-index: 0;
+            animation: glowPulse 8s ease-in-out infinite;
+        }
+
+        .glow-2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(217, 70, 239, 0.15) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            z-index: 0;
+            animation: glowPulse 12s ease-in-out infinite reverse;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+        }
+
+        /* Шапка */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 15px 30px -10px #a855f7;
+        }
+
+        .header-icon i {
+            font-size: 35px;
+            color: white;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .header-icon::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 28px;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(15px);
+        }
+
+        .header-text h1 {
+            font-family: "Clash Display", sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            color: #8b8f9c;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-text p i {
+            color: #d946ef;
+            font-size: 14px;
+        }
+
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 100px;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px -15px rgba(168, 85, 247, 0.3);
+        }
+
+        .stats-badge i {
+            font-size: 24px;
+            color: #d946ef;
+        }
+
+        .stats-badge .stat-number {
+            font-family: "Clash Display", sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .stats-badge .stat-label {
+            color: #8b8f9c;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Список */
+        .person-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 40px 0;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .person-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .person-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .person-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 10px;
+            box-shadow: 0 0 15px #a855f7;
+        }
+
+        /* Карточки */
+        .person-item {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: cardAppear 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .person-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.05), rgba(217, 70, 239, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .person-item:hover::before {
+            transform: translateX(100%);
+        }
+
+        .person-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .person-item:hover {
+            background: rgba(35, 40, 55, 0.8);
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 20px 40px -20px rgba(168, 85, 247, 0.5),
+            0 0 0 1px rgba(168, 85, 247, 0.2);
+        }
+
+        .person-item:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .person-item:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .person-item:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .person-item:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .person-item:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .person-item:nth-child(5) {
+            animation-delay: 0.3s;
+        }
+
+        .person-item:nth-child(6) {
+            animation-delay: 0.35s;
+        }
+
+        .person-item:nth-child(7) {
+            animation-delay: 0.4s;
+        }
+
+        .person-item:nth-child(8) {
+            animation-delay: 0.45s;
+        }
+
+        .person-item:nth-child(9) {
+            animation-delay: 0.5s;
+        }
+
+        .person-item:nth-child(10) {
+            animation-delay: 0.55s;
+        }
+
+        /* Аватар */
+        .avatar-wrapper {
+            position: relative;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2a2f3f, #1e2333);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: "Clash Display", sans-serif;
+            font-weight: 700;
+            font-size: 26px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px -10px #000;
+        }
+
+        .avatar-glow {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .person-item:hover .avatar {
+            border-color: #d946ef;
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .person-item:hover .avatar-glow {
+            opacity: 0.5;
+            filter: blur(5px);
+        }
+
+        /* Информация */
+        .person-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .person-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .person-name {
+            font-family: "Clash Display", sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .person-age {
+            font-size: 15px;
+            color: #8b8f9c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .person-age i {
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 14px;
+        }
+
+        /* КРАСИВЫЕ КНОПОЧКИ */
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Кнопка просмотра */
+        .view-btn {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -8px #a855f7;
+        }
+
+        .view-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .view-btn:hover::before {
+            left: 100%;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 35px -8px #a855f7;
+            gap: 15px;
+        }
+
+        .view-btn i {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .view-btn:hover i {
+            transform: translateX(5px) rotate(0deg);
+        }
+
+        /* Кнопка избранного */
+        .fav-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d946ef;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fav-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.3), transparent);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .fav-btn:hover {
+            border-color: #a855f7;
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .fav-btn:hover::before {
+            transform: scale(2);
+        }
+
+        .fav-btn i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Главная кнопка добавления */
+        .add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #2a2f3f, #1e2333);
+            color: white;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 15px 35px -15px #000;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 35px;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .add-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), rgba(217, 70, 239, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .add-btn:hover::before {
+            left: 100%;
+        }
+
+        .add-btn::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            border-radius: 62px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .add-btn:hover {
+            background: linear-gradient(135deg, #1e2333, #2a2f3f);
+            transform: translateY(-5px) scale(1.02);
+            border-color: transparent;
+            box-shadow: 0 25px 45px -15px #a855f7;
+        }
+
+        .add-btn:hover::after {
+            opacity: 1;
+            filter: blur(15px);
+        }
+
+        .add-btn i {
+            font-size: 22px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: all 0.4s ease;
+        }
+
+        .add-btn:hover i {
+            transform: rotate(180deg) scale(1.2);
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 80px 30px;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 40px;
+            border: 2px dashed rgba(168, 85, 247, 0.2);
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state-glow {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: emptyGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes emptyGlow {
+            0%, 100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0.5;
+            }
+            50% {
+                width: 300px;
+                height: 300px;
+                opacity: 0.8;
+            }
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            background: linear-gradient(135deg, #a855f7, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-state h3 {
+            font-family: "Clash Display", sans-serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-state p {
+            color: #8b8f9c;
+            font-size: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        hr {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- Частицы -->
+<div class="particles" id="particles"></div>
+
+<!-- Свечения -->
+<div class="glow"></div>
+<div class="glow-2"></div>
+
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <div class="header-icon">
+                <i class="fas fa-moon"></i>
+            </div>
+            <div class="header-text">
+                <h1>Night Society</h1>
+                <p><i class="fas fa-star"></i> элитный список людей</p>
+            </div>
+        </div>
+        <div class="stats-badge" th:if="${mdListPerson != null}">
+            <i class="fas fa-crown"></i>
+            <div>
+                <div class="stat-number" th:text="${#lists.size(mdListPerson)}">3</div>
+                <div class="stat-label">участника</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="person-list" th:if="${mdListPerson != null and !mdListPerson.isEmpty()}">
+        <div th:each="person, iterStat : ${mdListPerson}" class="person-item">
+            <div class="person-info">
+                <div class="avatar-wrapper">
+                    <div class="avatar" th:text="${#strings.substring(person.getName(), 0, 1)}">A</div>
+                    <div class="avatar-glow"></div>
+                </div>
+                <div class="person-details">
+                    <span class="person-name" th:text="${person.getName()}">Имя Фамилия</span>
+                    <span class="person-age">
+                            <i class="fas fa-cake-candles"></i>
+                            <span th:text="${person.getAge()} + ' лет'">25 лет</span>
+                        </span>
+                </div>
+            </div>
+            <div class="button-group">
+                <a th:href="@{/{id}(id=${person.getId()})}" class="view-btn">
+                    <span>Открыть</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <button class="fav-btn">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${mdListPerson == null or mdListPerson.isEmpty()}" class="empty-state">
+        <div class="empty-state-glow"></div>
+        <i class="fas fa-cloud-moon"></i>
+        <h3>Тишина в эфире</h3>
+        <p>Пригласите первого участника в ночное общество</p>
+    </div>
+
+    <a href="http://localhost:8080/add" class="add-btn">
+        <i class="fas fa-plus-circle"></i>
+        Добавить нового участника
+        <i class="fas fa-sparkles" style="font-size: 16px;"></i>
+    </a>
+</div>
+
+<script>
+    // Создание частиц
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            // Случайные размеры и позиции
+            const size = Math.random() * 6 + 2;
+            const left = Math.random() * 100;
+            const delay = Math.random() * 10;
+            const duration = Math.random() * 20 + 10;
+            const colors = ['#a855f7', '#d946ef', '#c084fc', '#e879f9'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            particle.style.cssText = `
+                    left: ${left}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    animation: float ${duration}s linear ${delay}s infinite;
+                    opacity: ${Math.random() * 0.3 + 0.1};
+                `;
+
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    createParticles();
+</script>
+</body>
+</html>
